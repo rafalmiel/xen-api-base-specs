@@ -5,10 +5,11 @@ Summary:        A store and forward message switch
 License:        FreeBSD
 URL:            https://github.com/xapi-project/message-switch
 Source0:        https://github.com/xapi-project/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-Source1:        message-switch-init
-Source2:        message-switch-conf
-Source3:        message-switch-bugtool1.xml
-Source4:        message-switch-bugtool2.xml
+Source1:        message-switch.service
+Source2:        message-switch-sysconfig
+Source3:        message-switch-conf
+Source4:        message-switch-bugtool1.xml
+Source5:        message-switch-bugtool2.xml
 BuildRequires:  ocaml
 BuildRequires:  ocaml-camlp4-devel
 BuildRequires:  ocaml-findlib
@@ -23,22 +24,17 @@ BuildRequires: ocaml-mtime-devel
 BuildRequires: ocaml-pa-structural-sexp-devel
 
 BuildRequires: oasis
-# Not available in the build chroot
-#Requires:      redhat-lsb-core
+BuildRequires: systemd-devel
 
-Requires(post): /sbin/chkconfig
-Requires(preun): /sbin/chkconfig
-Requires(preun): /sbin/service
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
 
 %description
 A store and forward message switch for OCaml.
 
 %prep
 %setup -q
-cp %{SOURCE1} message-switch-init
-cp %{SOURCE2} message-switch-conf
-cp %{SOURCE3} message-switch.xml
-cp %{SOURCE4} stuff.xml
 
 %build
 sed -i s/,\ bisect// _oasis
@@ -50,44 +46,31 @@ ocaml setup.ml -build
 mkdir -p %{buildroot}/%{_libdir}/ocaml
 export OCAMLFIND_DESTDIR=%{buildroot}/%{_libdir}/ocaml
 ocaml setup.ml -install
-mkdir -p %{buildroot}/%{_sbindir}
-install switch_main.native %{buildroot}/%{_sbindir}/message-switch
-install main.native %{buildroot}/%{_sbindir}/message-cli
-mkdir -p %{buildroot}/%{_sysconfdir}/init.d
-install -m 0755 message-switch-init %{buildroot}%{_sysconfdir}/init.d/message-switch
-install -m 0644 message-switch-conf %{buildroot}/etc/message-switch.conf
-mkdir -p %{buildroot}/etc/xensource/bugtool/message-switch
-install -m 0644 message-switch.xml %{buildroot}/etc/xensource/bugtool/message-switch.xml
-install -m 0644 stuff.xml %{buildroot}/etc/xensource/bugtool/message-switch/stuff.xml
+%{__install} -D -m 0755 switch_main.native %{buildroot}%{_sbindir}/message-switch
+%{__install} -D -m 0755 main.native %{buildroot}/%{_sbindir}/message-cli
+%{__install} -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/message-switch.service
+%{__install} -D -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/message-switch
+%{__install} -D -m 0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/message-switch.conf
+%{__install} -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/xensource/bugtool/message-switch.xml
+%{__install} -D -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/xensource/bugtool/message-switch/stuff.xml
 
 %files
 %{_sbindir}/message-switch
 %{_sbindir}/message-cli
-%{_sysconfdir}/init.d/message-switch
-%config(noreplace) /etc/message-switch.conf
-/etc/xensource/bugtool/message-switch/stuff.xml
-/etc/xensource/bugtool/message-switch.xml
+%{_unitdir}/message-switch.service
+%{_sysconfdir}/xensource/bugtool/message-switch.xml
+%{_sysconfdir}/xensource/bugtool/message-switch/stuff.xml
+%config(noreplace) %{_sysconfdir}/sysconfig/message-switch
+%config(noreplace) %{_sysconfdir}/message-switch.conf
 
 %post
-case $1 in
-  1) # install
-    /sbin/chkconfig --add message-switch
-    ;;
-  2) # upgrade
-    /sbin/chkconfig --del message-switch
-    /sbin/chkconfig --add message-switch
-    ;;
-esac
+%systemd_post message-switch.service
 
 %preun
-case $1 in
-  0) # uninstall
-    /sbin/service message-switch stop >/dev/null 2>&1 || :
-    /sbin/chkconfig --del message-switch
-    ;;
-  1) # upgrade
-    ;;
-esac
+%systemd_preun message-switch.service
+
+%postun
+%systemd_postun_with_restart message-switch.service
 
 %package        devel
 Summary:        Development files for %{name}
@@ -110,6 +93,9 @@ developing applications that use %{name}.
 
 * Wed Apr 13 2016 Si Beaumont <simon.beaumont@citrix.com> - 1.0.0-1
 - Update to 1.0.0
+
+* Fri Mar  4 2016 Si Beaumont <simon.beaumont@citrix.com> - 0.12.0-2
+- Package for systemd
 
 * Thu Jul 16 2015 David Scott <dave.scott@citrix.com> - 0.12.0-1
 - Add bugtool collection
