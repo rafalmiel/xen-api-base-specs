@@ -4,6 +4,7 @@ After=syslog.target
 Wants=syslog.target
 
 [Service]
+Type=notify
 Environment=OCAMLRUNPARAM=b
 EnvironmentFile=-/etc/sysconfig/message-switch
 RuntimeDirectory=message-switch

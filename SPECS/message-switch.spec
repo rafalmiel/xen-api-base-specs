@@ -22,6 +22,7 @@ BuildRequires: ocaml-async-devel
 BuildRequires: ocaml-shared-block-ring-devel
 BuildRequires: ocaml-mtime-devel
 BuildRequires: ocaml-pa-structural-sexp-devel
+BuildRequires: ocaml-systemd-devel
 
 BuildRequires: oasis
 BuildRequires: systemd-devel
@@ -76,6 +77,7 @@ ocaml setup.ml -install
 Summary:        Development files for %{name}
 Requires:       %{name} = %{version}-%{release}
 Requires:       ocaml-cohttp-devel%{?_isa}
+Requires:       ocaml-systemd-devel%{?_isa}
 Requires:       ocaml-re-devel%{?_isa}
 Requires:       ocaml-rpc-devel%{?_isa}
 
