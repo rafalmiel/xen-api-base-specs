@@ -17,6 +17,7 @@ BuildRequires:  ocaml-stdext-devel
 BuildRequires:  ocaml-uuidm-devel
 BuildRequires:  ocaml-xcp-idl-devel
 BuildRequires:  ocaml-oclock-devel
+BuildRequires:  ocaml-systemd-devel
 BuildRequires:  systemd-devel
 
 Requires(post):   systemd
@@ -66,6 +67,7 @@ Requires:       ocaml-rpc-devel%{?_isa}
 Requires:       ocaml-stdext-devel%{?_isa}
 Requires:       ocaml-uuidm-devel%{?_isa}
 Requires:       ocaml-xcp-idl-devel%{?_isa}
+Requires:       ocaml-systemd-devel%{?_isa}
 
 %description    devel
 The %{name}-devel package contains libraries and signature files for
