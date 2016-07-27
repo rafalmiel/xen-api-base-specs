@@ -8,6 +8,7 @@ Type=notify
 Environment=OCAMLRUNPARAM=b
 EnvironmentFile=-/etc/sysconfig/xapi-storage-script
 ExecStart=/usr/sbin/xapi-storage-script $XAPI_STORAGE_SCRIPT_OPTIONS
+StandardError=null
 
 [Install]
 WantedBy=multi-user.target

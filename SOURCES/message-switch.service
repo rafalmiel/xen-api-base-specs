@@ -9,6 +9,7 @@ Environment=OCAMLRUNPARAM=b
 EnvironmentFile=-/etc/sysconfig/message-switch
 RuntimeDirectory=message-switch
 ExecStart=/usr/sbin/message-switch --path /run/message-switch/sock --statedir /run/message-switch $MESSAGE_SWITCH_OPTIONS
+StandardError=null
 
 [Install]
 WantedBy=multi-user.target
