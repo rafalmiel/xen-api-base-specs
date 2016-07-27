@@ -9,6 +9,7 @@ Environment=OCAMLRUNPARAM=b
 EnvironmentFile=-/etc/sysconfig/forkexecd
 ExecStart=/usr/sbin/forkexecd $FORKEXECD_OPTIONS
 KillMode=process
+StandardError=null
 
 [Install]
 WantedBy=multi-user.target
