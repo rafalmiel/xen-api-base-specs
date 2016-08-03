@@ -4,6 +4,7 @@ After=network-online.target message-switch.service syslog.target
 Wants=network-online.target message-switch.service syslog.target
 
 [Service]
+Type=notify
 Environment=OCAMLRUNPARAM=b
 EnvironmentFile=-/etc/sysconfig/xapi-storage-script
 ExecStart=/usr/sbin/xapi-storage-script $XAPI_STORAGE_SCRIPT_OPTIONS
